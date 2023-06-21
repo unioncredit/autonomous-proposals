@@ -3,37 +3,37 @@
 pragma solidity ^0.6.10;
 pragma experimental ABIEncoderV2;
 
-import './ICompound.sol';
+import './IUnion.sol';
 import './CrowdProposal.sol';
 
 contract CrowdProposalFactory {
-    /// @notice `COMP` token contract address
-    address public immutable comp;
-    /// @notice Compound protocol `GovernorBravo` contract address
+    /// @notice `uni` token contract address
+    address public immutable uni;
+    /// @notice Union protocol `UnionGovernor` contract address
     address public immutable governor;
-    /// @notice Minimum Comp tokens required to create a crowd proposal
-    uint public immutable compStakeAmount;
+    /// @notice Minimum Uni tokens required to create a crowd proposal
+    uint public immutable uniStakeAmount;
 
     /// @notice An event emitted when a crowd proposal is created
     event CrowdProposalCreated(address indexed proposal, address indexed author, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, string description);
 
      /**
      * @notice Construct a proposal factory for crowd proposals
-     * @param comp_ `COMP` token contract address
-     * @param governor_ Compound protocol `GovernorBravo` contract address
-     * @param compStakeAmount_ The minimum amount of Comp tokes required for creation of a crowd proposal
+     * @param uni_ `uni` token contract address
+     * @param governor_ Union protocol `UnionGovernor` contract address
+     * @param uniStakeAmount_ The minimum amount of uni tokes required for creation of a crowd proposal
      */
-    constructor(address comp_,
+    constructor(address uni_,
                 address governor_,
-                uint compStakeAmount_) public {
-        comp = comp_;
+                uint uniStakeAmount_) public {
+        uni = uni_;
         governor = governor_;
-        compStakeAmount = compStakeAmount_;
+        uniStakeAmount = uniStakeAmount_;
     }
 
     /**
     * @notice Create a new crowd proposal
-    * @notice Call `Comp.approve(factory_address, compStakeAmount)` before calling this method
+    * @notice Call `Uni.approve(factory_address, uniStakeAmount)` before calling this method
     * @param targets The ordered list of target addresses for calls to be made
     * @param values The ordered list of values (i.e. msg.value) to be passed to the calls to be made
     * @param signatures The ordered list of function signatures to be called
@@ -45,10 +45,10 @@ contract CrowdProposalFactory {
                                  string[] memory signatures,
                                  bytes[] memory calldatas,
                                  string memory description) external {
-        CrowdProposal proposal = new CrowdProposal(msg.sender, targets, values, signatures, calldatas, description, comp, governor);
+        CrowdProposal proposal = new CrowdProposal(msg.sender, targets, values, signatures, calldatas, description, uni, governor);
         emit CrowdProposalCreated(address(proposal), msg.sender, targets, values, signatures, calldatas, description);
 
         // Stake COMP and force proposal to delegate votes to itself
-        IComp(comp).transferFrom(msg.sender, address(proposal), compStakeAmount);
+        IUni(uni).transferFrom(msg.sender, address(proposal), uniStakeAmount);
     }
 }

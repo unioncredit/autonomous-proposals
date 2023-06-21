@@ -3,7 +3,7 @@
 pragma solidity ^0.6.10;
 pragma experimental ABIEncoderV2;
 
-import './ICompound.sol';
+import './IUnion.sol';
 
 contract CrowdProposal {
     /// @notice The crowd proposal author
@@ -16,9 +16,9 @@ contract CrowdProposal {
     bytes[] public calldatas;
     string public description;
 
-    /// @notice COMP token contract address
-    address public immutable comp;
-    /// @notice Compound protocol `GovernorBravo` contract address
+    /// @notice Union token contract address
+    address public immutable uni;
+    /// @notice Union protocol `UnionGovernor` contract address
     address public immutable governor;
 
     /// @notice Governance proposal id
@@ -41,8 +41,8 @@ contract CrowdProposal {
     * @param signatures_ The ordered list of function signatures to be called
     * @param calldatas_ The ordered list of calldata to be passed to each call
     * @param description_ The block at which voting begins: holders must delegate their votes prior to this block
-    * @param comp_ `COMP` token contract address
-    * @param governor_ Compound protocol `GovernorBravo` contract address
+    * @param uni_ `Union` token contract address
+    * @param governor_ Union protocol `UnionGovernor` contract address
     */
     constructor(address payable author_,
                 address[] memory targets_,
@@ -50,7 +50,7 @@ contract CrowdProposal {
                 string[] memory signatures_,
                 bytes[] memory calldatas_,
                 string memory description_,
-                address comp_,
+                address uni_,
                 address governor_) public {
         author = author_;
 
@@ -62,13 +62,13 @@ contract CrowdProposal {
         description = description_;
 
         // Save Compound contracts data
-        comp = comp_;
+        uni = uni_;
         governor = governor_;
 
         terminated = false;
 
         // Delegate votes to the crowd proposal
-        IComp(comp_).delegate(address(this));
+        IUni(uni_).delegate(address(this));
     }
 
     /// @notice Create governance proposal
@@ -77,7 +77,7 @@ contract CrowdProposal {
         require(!terminated, 'CrowdProposal::propose: proposal has been terminated');
 
         // Create governance proposal and save proposal id
-        govProposalId = IGovernorBravo(governor).propose(targets, values, signatures, calldatas, description);
+        govProposalId = IUnionGovernor(governor).propose(targets, values, signatures, calldatas, description);
         emit CrowdProposalProposed(address(this), author, govProposalId);
 
         return govProposalId;
@@ -91,7 +91,7 @@ contract CrowdProposal {
         terminated = true;
 
         // Transfer staked COMP tokens from the crowd proposal contract back to the author
-        IComp(comp).transfer(author, IComp(comp).balanceOf(address(this)));
+        IUni(uni).transfer(author, IUni(uni).balanceOf(address(this)));
 
         emit CrowdProposalTerminated(address(this), author);
     }
@@ -100,7 +100,7 @@ contract CrowdProposal {
     function vote() external {
         require(govProposalId > 0, 'CrowdProposal::vote: gov proposal has not been created yet');
         // Support the proposal, vote value = 1
-        IGovernorBravo(governor).castVote(govProposalId, 1);
+        IUnionGovernor(governor).castVote(govProposalId, 1);
 
         emit CrowdProposalVoted(address(this), govProposalId);
     }
