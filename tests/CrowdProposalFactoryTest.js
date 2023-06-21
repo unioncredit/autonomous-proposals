@@ -24,11 +24,12 @@ describe("CrowdProposalFactory", () => {
       1,
       "100000000000000000000000",
     ]);
+    mergeInterface(gov, govDelegate);
     await send(gov, "_initiate");
     factory = await deploy("CrowdProposalFactory", [
       uni._address,
       gov._address,
-      timelock._address,
+      timelock,
       uint(minUniThreshold),
     ]);
   });
@@ -52,8 +53,8 @@ describe("CrowdProposalFactory", () => {
   describe("setUniStakeAmount", () => {
     it("revert if sender does not timelock", async () => {
       await expect(
-        send(factory, "setUniStakeAmount", [999], { from: author })
-      ).rejects.toRevert("only timelock");
+        send(factory, "setUniStakeAmount", [999], { from: root })
+      ).rejects.toRevert("revert only timelock");
     });
 
     it("successfully change stake amount", async () => {

@@ -1,10 +1,9 @@
 {
   "name": "autonomous-proposals",
   "version": "1.0.0",
-  "description": "Compound Crowd Proposals",
+  "description": "Crowd Proposals",
   "main": "index.js",
-  "repository": "git@github.com:compound-finance/autonomous-proposals.git",
-  "author": "Compound Labs, Inc.",
+  "repository": "git@github.com:unioncredit/autonomous-proposals.git",
   "license": "BSD-3",
   "dependencies": {
     "bignumber.js": "^9.0.0",

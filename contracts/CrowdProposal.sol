@@ -61,7 +61,7 @@ contract CrowdProposal {
         calldatas = calldatas_;
         description = description_;
 
-        // Save Compound contracts data
+        // Save Union contracts data
         uni = uni_;
         governor = governor_;
 
@@ -83,14 +83,14 @@ contract CrowdProposal {
         return govProposalId;
     }
 
-    /// @notice Terminate the crowd proposal, send back staked COMP tokens
+    /// @notice Terminate the crowd proposal, send back staked union tokens
     function terminate() external {
         require(msg.sender == author, 'CrowdProposal::terminate: only author can terminate');
         require(!terminated, 'CrowdProposal::terminate: proposal has been already terminated');
 
         terminated = true;
 
-        // Transfer staked COMP tokens from the crowd proposal contract back to the author
+        // Transfer staked union tokens from the crowd proposal contract back to the author
         IUni(uni).transfer(author, IUni(uni).balanceOf(address(this)));
 
         emit CrowdProposalTerminated(address(this), author);

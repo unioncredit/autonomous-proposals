@@ -60,7 +60,7 @@ contract CrowdProposalFactory {
         CrowdProposal proposal = new CrowdProposal(msg.sender, targets, values, signatures, calldatas, description, uni, governor);
         emit CrowdProposalCreated(address(proposal), msg.sender, targets, values, signatures, calldatas, description);
 
-        // Stake COMP and force proposal to delegate votes to itself
+        // Stake uni and force proposal to delegate votes to itself
         IUni(uni).transferFrom(msg.sender, address(proposal), uniStakeAmount);
     }
 }
