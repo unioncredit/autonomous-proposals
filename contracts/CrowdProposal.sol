@@ -89,10 +89,12 @@ contract CrowdProposal {
         require(!terminated, 'CrowdProposal::terminate: proposal has been already terminated');
 
         terminated = true;
-
+    
         // Transfer staked union tokens from the crowd proposal contract back to the author
-        IUni(uni).transfer(author, IUni(uni).balanceOf(address(this)));
-
+        uint amount = IUni(uni).balanceOf(address(this));
+        if(amount > 0){
+            IUni(uni).transfer(author, amount);
+        }
         emit CrowdProposalTerminated(address(this), author);
     }
 

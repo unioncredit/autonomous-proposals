@@ -61,6 +61,8 @@ contract CrowdProposalFactory {
         emit CrowdProposalCreated(address(proposal), msg.sender, targets, values, signatures, calldatas, description);
 
         // Stake uni and force proposal to delegate votes to itself
-        IUni(uni).transferFrom(msg.sender, address(proposal), uniStakeAmount);
+        if(uniStakeAmount > 0){
+            IUni(uni).transferFrom(msg.sender, address(proposal), uniStakeAmount);
+        }
     }
 }
