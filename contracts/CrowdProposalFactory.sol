@@ -7,14 +7,14 @@ import './IUnion.sol';
 import './CrowdProposal.sol';
 
 contract CrowdProposalFactory {
-    /// @notice `uni` token contract address
-    address public immutable uni;
+    /// @notice `UNION` token contract address
+    address public immutable union;
     /// @notice Union protocol `UnionGovernor` contract address
     address public immutable governor;
     /// @notice Union protocol `UnionGovernor timelock` contract address
     address public immutable timelock;
-    /// @notice Minimum Uni tokens required to create a crowd proposal
-    uint public uniStakeAmount;
+    /// @notice Minimum UNION tokens required to create a crowd proposal
+    uint public unionStakeAmount;
 
     /// @notice An event emitted when a crowd proposal is created
     event CrowdProposalCreated(address indexed proposal, address indexed author, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, string description);
@@ -22,30 +22,30 @@ contract CrowdProposalFactory {
     event StakeAmountChange(uint oldAmount, uint newAmount);
      /**
      * @notice Construct a proposal factory for crowd proposals
-     * @param uni_ `uni` token contract address
+     * @param union_ `UNION` token contract address
      * @param governor_ Union protocol `UnionGovernor` contract address
-     * @param uniStakeAmount_ The minimum amount of uni tokes required for creation of a crowd proposal
+     * @param unionStakeAmount_ The minimum amount of UNION tokes required for creation of a crowd proposal
      */
-    constructor(address uni_,
+    constructor(address union_,
                 address governor_,
                 address timelock_,
-                uint uniStakeAmount_) public {
-        uni = uni_;
+                uint unionStakeAmount_) public {
+        union = union_;
         governor = governor_;
         timelock = timelock_;
-        uniStakeAmount = uniStakeAmount_;
+        unionStakeAmount = unionStakeAmount_;
     }
 
-    function setUniStakeAmount(uint uniStakeAmount_) external {
+    function setUnionStakeAmount(uint unionStakeAmount_) external {
         require(msg.sender == timelock, "only timelock");
-        uint oldUniStakeAmount = uniStakeAmount;
-        uniStakeAmount = uniStakeAmount_;
-        emit StakeAmountChange(oldUniStakeAmount, uniStakeAmount);
+        uint oldUnionStakeAmount = unionStakeAmount;
+        unionStakeAmount = unionStakeAmount_;
+        emit StakeAmountChange(oldUnionStakeAmount, unionStakeAmount);
     }
 
     /**
     * @notice Create a new crowd proposal
-    * @notice Call `Uni.approve(factory_address, uniStakeAmount)` before calling this method
+    * @notice Call `union.approve(factory_address, unionStakeAmount)` before calling this method
     * @param targets The ordered list of target addresses for calls to be made
     * @param values The ordered list of values (i.e. msg.value) to be passed to the calls to be made
     * @param signatures The ordered list of function signatures to be called
@@ -57,12 +57,12 @@ contract CrowdProposalFactory {
                                  string[] memory signatures,
                                  bytes[] memory calldatas,
                                  string memory description) external {
-        CrowdProposal proposal = new CrowdProposal(msg.sender, targets, values, signatures, calldatas, description, uni, governor);
+        CrowdProposal proposal = new CrowdProposal(msg.sender, targets, values, signatures, calldatas, description, union, governor);
         emit CrowdProposalCreated(address(proposal), msg.sender, targets, values, signatures, calldatas, description);
 
-        // Stake uni and force proposal to delegate votes to itself
-        if(uniStakeAmount > 0){
-            IUni(uni).transferFrom(msg.sender, address(proposal), uniStakeAmount);
+        // Stake UNION and force proposal to delegate votes to itself
+        if(unionStakeAmount > 0){
+            IUnion(union).transferFrom(msg.sender, address(proposal), unionStakeAmount);
         }
     }
 }

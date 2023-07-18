@@ -16,9 +16,9 @@ contract CrowdProposal {
     bytes[] public calldatas;
     string public description;
 
-    /// @notice Union token contract address
-    address public immutable uni;
-    /// @notice Union protocol `UnionGovernor` contract address
+    /// @notice UNION token contract address
+    address public immutable union;
+    /// @notice UNION protocol `UnionGovernor` contract address
     address public immutable governor;
 
     /// @notice Governance proposal id
@@ -41,8 +41,8 @@ contract CrowdProposal {
     * @param signatures_ The ordered list of function signatures to be called
     * @param calldatas_ The ordered list of calldata to be passed to each call
     * @param description_ The block at which voting begins: holders must delegate their votes prior to this block
-    * @param uni_ `Union` token contract address
-    * @param governor_ Union protocol `UnionGovernor` contract address
+    * @param union_ `UNION` token contract address
+    * @param governor_ UNION protocol `UnionGovernor` contract address
     */
     constructor(address payable author_,
                 address[] memory targets_,
@@ -50,7 +50,7 @@ contract CrowdProposal {
                 string[] memory signatures_,
                 bytes[] memory calldatas_,
                 string memory description_,
-                address uni_,
+                address union_,
                 address governor_) public {
         author = author_;
 
@@ -62,13 +62,13 @@ contract CrowdProposal {
         description = description_;
 
         // Save Union contracts data
-        uni = uni_;
+        union = union_;
         governor = governor_;
 
         terminated = false;
 
         // Delegate votes to the crowd proposal
-        IUni(uni_).delegate(address(this));
+        IUnion(union_).delegate(address(this));
     }
 
     /// @notice Create governance proposal
@@ -91,9 +91,9 @@ contract CrowdProposal {
         terminated = true;
     
         // Transfer staked union tokens from the crowd proposal contract back to the author
-        uint amount = IUni(uni).balanceOf(address(this));
+        uint amount = IUnion(union).balanceOf(address(this));
         if(amount > 0){
-            IUni(uni).transfer(author, amount);
+            IUnion(union).transfer(author, amount);
         }
         emit CrowdProposalTerminated(address(this), author);
     }
