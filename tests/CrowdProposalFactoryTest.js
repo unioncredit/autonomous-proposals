@@ -35,8 +35,8 @@ describe("CrowdProposalFactory", () => {
   });
 
   describe("metadata", () => {
-    it("has given uni", async () => {
-      expect(await call(factory, "uni")).toEqual(uni._address);
+    it("has given union", async () => {
+      expect(await call(factory, "union")).toEqual(uni._address);
     });
 
     it("has given governor", async () => {
@@ -44,24 +44,24 @@ describe("CrowdProposalFactory", () => {
     });
 
     it("has given min uni threshold", async () => {
-      expect(await call(factory, "uniStakeAmount")).toEqual(
+      expect(await call(factory, "unionStakeAmount")).toEqual(
         "100000000000000000000"
       );
     });
   });
 
-  describe("setUniStakeAmount", () => {
+  describe("setUnionStakeAmount", () => {
     it("revert if sender does not timelock", async () => {
       await expect(
-        send(factory, "setUniStakeAmount", [999], { from: root })
+        send(factory, "setUnionStakeAmount", [999], { from: root })
       ).rejects.toRevert("revert only timelock");
     });
 
     it("successfully change stake amount", async () => {
-      await send(factory, "setUniStakeAmount", [999], {
+      await send(factory, "setUnionStakeAmount", [999], {
         from: timelock,
       });
-      expect(await call(factory, "uniStakeAmount", [])).toEqual("999");
+      expect(await call(factory, "unionStakeAmount", [])).toEqual("999");
     });
   });
 

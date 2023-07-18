@@ -79,7 +79,7 @@ describe("CrowdProposal", () => {
     });
 
     it("has given uni", async () => {
-      expect(await call(proposal, "uni")).toEqual(uni._address);
+      expect(await call(proposal, "union")).toEqual(uni._address);
     });
 
     it("has given governor", async () => {
